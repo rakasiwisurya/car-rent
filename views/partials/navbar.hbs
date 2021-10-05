@@ -1,0 +1,72 @@
+<nav class="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="/">{{title}}</a>
+    <button 
+    class="navbar-toggler" 
+    data-bs-toggle="collapse" 
+    data-bs-target="#navbarContent" 
+    aria-controls="navbarContent"
+    aria-expanded="false"
+    aria-label="toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+
+    {{#if isLogin}}
+    <div class="dropdown">
+        <a href="#" class="dropdown-toggle" role="button" id="dropdownMenu" data-bs-toggle="dropdown" aria-expanded="false">
+          <img src="/static/image/avatar_default.png" alt="" class="img-avatar">
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end mt-3" aria-labelledby="dropdownMenu">
+          <li class="mb-2">
+            <a href="/type/add" class="dropdown-item d-flex align-items-center">
+              <img src="/static/icons/knowledge.svg" alt="add type">
+              <span class="ms-2">Add Type</span>
+            </a>
+          </li>        
+          <li class="mb-2">
+            <a href="/brand/add" class="dropdown-item d-flex align-items-center">
+              <img src="/static/icons/knowledge.svg" alt="add brand">
+              <span class="ms-2">Add Brand</span>
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="/car/add" class="dropdown-item d-flex align-items-center">
+              <img src="/static/icons/knowledge.svg" alt="add car">
+              <span class="ms-2">Add Car</span>
+            </a>
+          </li>
+          <li class="mb-2">
+            <a href="/rent/add" class="dropdown-item d-flex align-items-center">
+              <img src="/static/icons/knowledge.svg" alt="add rent">
+              <span class="ms-2">Add Rent</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li>
+            <a href="/logout" class="dropdown-item d-flex align-items-center">
+              <img src="/static/icons/logout.svg" alt="logout">
+              <span class="ms-2">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      {{else}}
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item mx-2">
+              <a href="/login" class="btn btn-outline-dark px-4">
+                Login
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="/register" class="btn btn-dark">
+                Register
+              </a>
+            </li>
+          </ul>
+        </div>
+      {{/if}}
+  </div>
+</nav>

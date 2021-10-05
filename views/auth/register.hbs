@@ -1,0 +1,67 @@
+{{> head}}
+{{> navbar}}
+
+<main>
+  {{#if message}}
+    <div class="alert alert-{{message.type}}" role="alert">
+      {{message.message}}
+    </div>
+  {{/if}}
+
+  <div class="container text-center mb-5 d-flex justify-content-center">
+
+    <div class="card text-dark bg-light mb-3" style="width: 30rem;">
+      <div class="card-header">Form Register</div>
+      <div class="card-body">
+
+        <form action="" method="post">
+
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" name="email" placeholder="e.g. name@example.com">
+            <label for="email">Email</label>
+          </div>
+
+          <div class="form-floating">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+            <label for="password">Password</label>
+          </div>
+          
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="no_ktp" name="no_ktp" placeholder="e.g. 317202xxxxx">
+            <label for="no_ktp">No KTP</label>
+          </div>
+          
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control" id="name" name="name" placeholder="Type your name here">
+            <label for="name">Name</label>
+          </div>
+          
+          <div class="form-floating">
+            <textarea class="form-control" placeholder="Input your address" id="address" name="address" style="height: 100px"></textarea>
+            <label for="address">Address</label>
+          </div>
+          
+          <div class="form-floating mb-3">
+            <input type="number" class="form-control" id="phone" name="phone" placeholder="e.g. 08571xxxxx">
+            <label for="phone">Phone</label>
+          </div>
+          
+          <div class="form-floating">
+            <select class="form-select" id="status" name="status" aria-label="Floating Select">
+              <option selected disabled>- Select Option-</option>
+              <option value="0">Admin</option>
+              <option value="1">Client</option>
+            </select>
+            <label for="status">Choose your Privilages</label>
+          </div>
+
+          <button type="submit" class="mt-4 btn btn-dark">Register</button>
+        </form>
+
+      </div>
+    </div>
+
+  </div>
+</main>
+
+{{> footer}}
