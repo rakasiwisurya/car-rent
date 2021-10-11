@@ -1,0 +1,87 @@
+<div
+  class="p-3 bg-light shadow sidebar"
+>
+  <a
+    href="/"
+    class="
+      d-flex
+      align-items-center
+      mb-3 mb-md-0
+      me-md-auto
+      link-dark
+      text-decoration-none
+    "
+  >
+    <span class="fs-4"><strong>Car Rent</strong></span>
+  </a>
+  <hr />
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+      <a href="/" class="nav-link link-dark" aria-current="page">
+        <span><i class="fas fa-home"></i></span>
+        Home
+      </a>
+    </li>
+    {{#if isCarRentOwner}}
+    <li>
+      <a href="/rent" class="nav-link link-dark">
+        <span><i class="fas fa-shopping-cart"></i></span>
+        Rent
+      </a>
+    </li>
+    <li>
+      <a href="/type" class="nav-link link-dark">
+        <span><i class="fas fa-car"></i></span>
+        Type
+      </a>
+    </li>
+    <li>
+      <a href="/brand" class="nav-link link-dark">
+        <span><i class="fab fa-bandcamp"></i></span>
+        Brand
+      </a>
+    </li>
+    {{!-- <li>
+      <a href="#" class="nav-link link-dark">
+        <span><i class="fas fa-user"></i></span>
+        User
+      </a>
+    </li> --}}
+    {{/if}}
+  </ul>
+  <hr />
+  <div class="dropdown">
+    <a
+      href="#"
+      class="
+        d-flex
+        align-items-center
+        link-dark
+        text-decoration-none
+        dropdown-toggle
+      "
+      id="dropdownUser"
+      data-bs-toggle="dropdown"
+      aria-expanded="false"
+    >
+      <img 
+        src="/static/image/avatar_default.png" 
+        alt="img-avatar" 
+        width="32"
+        height="32"
+        class="rounded-circle me-2"
+      />
+      <strong>{{username}}</strong>
+    </a>
+    <ul
+      class="dropdown-menu text-small shadow"
+      aria-labelledby="dropdownUser"
+    >
+      {{#if isCarRentOwner}}
+      <li><a class="dropdown-item" href="/car/add">Add New Car</a></li>
+      {{/if}}
+      <li><hr class="dropdown-divider" /></li>
+      <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+    </ul>
+  </div>
+</div>

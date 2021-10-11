@@ -8,7 +8,8 @@
 }
 
 main {
-  margin-top: 100px;
+  margin-left: 280px;
+  padding: 20px;
 }
 
 .navbar-brand {
@@ -20,6 +21,19 @@ main {
   box-shadow: 0 0 8px 3px rgba(0, 0, 0, .2);
   line-height: 50px;
 }
+
+.sidebar {
+  width: 280px;
+  position: fixed;
+  height: 100%;
+  overflow: auto;
+  z-index: 10;
+}
+
+/* .content {
+  margin-left: 280px;
+  padding: 20px;
+} */
 
 form button {
   width: 100%;
@@ -185,29 +199,10 @@ form textarea:focus {
   width: 20px;
 }
 
-/* .content-list a {
-  color: #393939;
-  text-decoration: none;
-} */
-
 .car-rent .img-main {
   min-width: 100%;
   min-height: 560px;
   background: #c4c4c4;
-}
-
-.car-rent h4 {
-  font-style: normal;
-  font-weight: bold;
-  font-size: 36px;
-  line-height: 42px;
-}
-
-.car-rent h3 {
-  font-style: normal;
-  font-weight: bold;
-  font-size: 30px;
-  line-height: 42px;
 }
 
 .car-rent p {
@@ -222,4 +217,12 @@ form textarea:focus {
 
 .car-rent a img {
   width: 35px;
+}
+
+.table-no {
+  width: 20px;
+}
+
+.table-action {
+  width: 110px;
 }

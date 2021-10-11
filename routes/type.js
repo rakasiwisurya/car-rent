@@ -3,6 +3,54 @@ const router = require("express").Router();
 // import db connection
 const dbConnection = require("../connection/db");
 
+// render type page
+router.get("/", function (req, res) {
+  let isCarRentOwner = false;
+
+  if (req.session.isLogin) {
+    if (req.session.user.status == 1) {
+      isCarRentOwner = true;
+    }
+  }
+
+  if (!req.session.isLogin) {
+    return res.redirect("/login");
+  }
+
+  dbConnection.getConnection((err, conn) => {
+    if (err) throw err;
+
+    const types = [];
+
+    const queryType = "SELECT * FROM tb_type ORDER BY created_at ASC";
+
+    conn.query(queryType, (err, results) => {
+      if (err) throw err;
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+
+        let no = i + 1;
+
+        types.push({
+          ...result,
+          no,
+        });
+      }
+    });
+
+    res.render("car-rent/type/index", {
+      title: "Type",
+      isLogin: req.session.isLogin,
+      username: req.session.user.name,
+      isCarRentOwner,
+      types,
+    });
+
+    conn.release();
+  });
+});
+
 // render type add form page
 router.get("/add", function (req, res) {
   res.render("car-rent/type/form-add", {
@@ -44,11 +92,6 @@ router.get("/edit/:id", function (req, res) {
         ...results[0],
       };
 
-      req.session.message = {
-        type: "success",
-        message: "edit type successfully",
-      };
-
       res.render("car-rent/type/form-edit", {
         title: "Edit Car Type",
         isLogin: req.session.isLogin,
@@ -61,10 +104,8 @@ router.get("/edit/:id", function (req, res) {
 });
 
 // render type page
-router.post("/", function (req, res) {
+router.post("/add", function (req, res) {
   let { name } = req.body;
-
-  console.log(req.body);
 
   const query = "INSERT INTO tb_type (name) VALUES (?)";
 
@@ -75,16 +116,16 @@ router.post("/", function (req, res) {
       if (err) {
         req.session.message = {
           type: "danger",
-          message: err.message,
+          message: "server error",
         };
-        res.redirect("/type/add");
+        res.redirect("/type");
       } else {
         req.session.message = {
           type: "success",
           message: "add type successfully",
         };
 
-        res.redirect(`/`);
+        res.redirect("/type");
       }
     });
 
@@ -107,8 +148,13 @@ router.post("/edit/:id", function (req, res) {
           message: err.message,
         };
         res.redirect(`/type/edit/${id}`);
+      } else {
+        req.session.message = {
+          type: "success",
+          message: "edit type successfully",
+        };
+        res.redirect("/type");
       }
-      res.redirect(`/type/edit/${id}`);
     });
 
     conn.release();
@@ -130,14 +176,14 @@ router.get("/delete/:id", function (req, res) {
           type: "danger",
           message: err.message,
         };
-        res.redirect("/");
+        res.redirect("/type");
       }
 
       req.session.message = {
         type: "success",
         message: "type successfully deleted",
       };
-      res.redirect("/");
+      res.redirect("/type");
     });
 
     conn.release();

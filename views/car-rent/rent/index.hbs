@@ -1,0 +1,52 @@
+{{> head}}
+
+{{> sidebar}}
+
+<main id="rent">
+
+  {{#if message}}
+    <div class="alert alert-{{message.type}}" role="alert">
+      {{message.message}}
+    </div>
+  {{/if}}
+  
+  <h4><strong>{{title}}</strong></h4>
+  <hr>
+  <div class="mx-5">
+    <table class="table table-striped">
+      <thead class="table-dark">
+        <th>No</th>
+        <th>Car</th>
+        <th>User</th>
+        <th>Borrow Date</th>
+        <th>Return Date</th>
+        <th>Sub Total</th>
+        <th>Action</th>
+      </thead>
+      <tbody>
+        {{#each rents}}
+        <tr>
+          <td class="table-no">{{this.no}}</td>
+          <td>{{this.carName}}</td>
+          <td>{{this.userName}}</td>
+          <td>{{this.borrowDate}}</td>
+          <td>{{this.returnDate}}</td>
+          <td>${{this.sub_total}}</td>
+          <td class="text-center table-action">
+            <a href="/rent/edit/{{this.id}}" class="btn btn-warning text-white">
+              <span>
+                <i class="fas fa-edit"></i>
+              </span>
+            </a>
+            <a href="/rent/delete/{{this.id}}" class="btn btn-danger">
+              <span><i class="fas fa-trash"></i></span>
+            </a>
+          </td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+</main>
+
+{{> footer}}

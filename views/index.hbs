@@ -1,5 +1,7 @@
 {{> head}}
-{{> navbar}}
+{{!-- {{> navbar}} --}}
+
+{{> sidebar}}
 
 <main>
   {{#if message}}
@@ -8,128 +10,74 @@
     </div>
   {{/if}}
 
-  <div class="container my-4">
-    <section class="car">
+  <div class="car-content">
+    <div class="car">
       {{#if cars}}
-      <div class="row main-content">
-        <div class="col-4">
-          <img src="{{cars.0.image}}" class="img-thumbnail" alt="car thumbnail" style="width:350px; height:250px;">
-        </div>
-        <div class="col-8">
-          <a href="/car/{{car.0.id}}"></a>
+      <div class="container">
+        <div class="row mb-4">
+          <h2 class="h5"><bold>What's New Car For Rent</bold></h2>
+          <hr>
+          <a href="/car/{{cars.0.id}}" class="card rounded shadow p-3 text-decoration-none link-dark">
+            <div class="row main-content">
+              <div class="col-4">
+                <img src="{{cars.0.image}}" class="img-thumbnail" alt="car thumbnail" style="width:350px; height:250px;">
+              </div>
+              <div class="col-8">
+                <h3 class="mb-2" style="font-weight: 600;">{{cars.0.name}}</h3>
 
-          <h2 class="mb-3" style="font-weight: 600;">{{cars.0.name}}</h2>
-
-          <div class="text-desc-content">
-            <p class="mb-2">{{cars.0.plat_number}} <b>(${{cars.0.price}})</b></p>
-            <p class="mb-3">Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis, sed corrupti, perferendis recusandae distinctio corporis vero optio animi sunt est repudiandae doloribus nisi quisquam numquam dicta reprehenderit deserunt sint ratione.</p>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates dolores inventore eius non itaque asperiores, ipsum quia, accusamus dolor sed ut sint at! Fugiat doloribus, modi nemo quos, cum amet molestiae expedita voluptatem distinctio nam fuga veniam necessitatibus, dolorem quas iusto odio deserunt ducimus! Perferendis error omnis accusantium id ipsum.</p>
-          </div>
-        </div>
-      </div>
-      <div class="row my-5">
-        {{#each cars}}
-          <div class="card mx-1 px-0 col-3">
-            <img src="{{this.image}}" class="card-img-top" alt="car thumbnail" style="width: 100%; height: 200px;">
-            <div class="card-body">
-              <h5 class="card-title">{{this.name}}</h5>
-              <p class="card-text">{{this.plat_number}} <b>(${{this.price}})</b></p>
-              <a href="/car/{{this.id}}" class="btn btn-primary">Detail</a>
-              <a href="#" class="btn btn-success px-3 disabled" aria-disabled="true">Rent</a>
+                <div class="text-desc-content">
+                  <p class="mb-2">{{cars.0.plat_number}} <b>(${{cars.0.price}})</b></p>
+                  <p>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis, sed corrupti, perferendis recusandae distinctio corporis vero optio animi sunt est repudiandae doloribus nisi quisquam numquam dicta reprehenderit deserunt sint ratione.
+                    <br><br>
+                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Omnis, sed corrupti, perferendis recusandae distinctio corporis vero optio animi sunt est repudiandae doloribus nisi quisquam numquam dicta reprehenderit deserunt sint ratione.
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-        {{/each}}
+          </a>
+        </div>
+        <div class="row mb-4">
+          <h2 class="h5"><bold>All Car Rent Available</bold></h2>
+          <hr>
+          {{#each cars}}
+            <a href="/car/{{this.id}}" class="card shadow m-1 px-0 col-4 text-decoration-none link-dark">
+              <img src="{{this.image}}" class="card-img-top" alt="car thumbnail" style="width: 100%; height: 200px;">
+              <div class="card-body">
+                <h5 class="card-title">{{this.name}}</h5>
+                <p class="card-text">{{this.plat_number}} <b>(${{this.price}})</b></p>
+                <form action="/rent/add" method="POST" class="d-flex">
+                  <input type="hidden" name="car_id" value={{this.id}}>
+                  <input type="hidden" name="sub_total" value={{this.price}}>
+                  <button type="submit" class="btn btn-success">Rent</button>
+                </form>
+              </div>
+            </a>
+          {{/each}}
+        </div>
+        <div class="row">
+          <h2 class="h5"><bold>All Car Rented</bold></h2>
+          <hr>
+          {{#each renteds}}
+            <a href="/car/{{this.id}}" class="card shadow m-1 px-0 col-4 text-decoration-none link-dark">
+              <img src="{{this.image}}" class="card-img-top" alt="car thumbnail" style="width: 100%; height: 200px;">
+              <div class="card-body">
+                <h5 class="card-title">{{this.name}}</h5>
+                <p class="card-text">{{this.plat_number}} <b>(${{this.price}})</b></p>
+                <form action="/rent/return" method="POST" class="d-flex">
+                  <input type="hidden" name="car_id" value={{this.id}}>
+                  <button type="submit" class="btn btn-danger">Return</button>
+                </form>
+              </div>
+            </a>
+          {{/each}}
+        </div>
       </div>
       {{/if}}
-    </section>
-
-    {{#if isCarRentOwner}}
-    <section class="show-data-table">
-      <div class="container">
-        <div class="row my-3">
-          <div class="col">
-            <h4>Tabel Type</h4>
-            <table class="table table-striped">
-              <thead class="table-dark">
-                <th>No</th>
-                <th>Type</th>
-                <th>Action</th>
-              </thead>
-              <tbody>
-                {{#each types}}  
-                <tr>
-                  <td>{{this.no}}</td>
-                  <td>{{this.name}}</td>
-                  <td>
-                    <a href="/type/edit/{{this.id}}" class="btn btn-outline-success px-4">Edit</a>
-                    <a href="/type/delete/{{this.id}}" class="btn btn-outline-danger">Delete</a>
-                  </td>
-                </tr>
-                {{/each}}
-              </tbody>
-            </table>
-          </div>
-
-          <div class="col">
-            <h4>Tabel Brand</h4>
-            <table class="table table-striped">
-              <thead class="table-dark">
-                <th>No</th>
-                <th>Brand</th>
-                <th>Action</th>
-              </thead>
-              <tbody>
-                {{#each brands}}
-                <tr>
-                  <td>{{this.no}}</td>
-                  <td>{{this.name}}</td>
-                  <td>
-                    <a href="/brand/edit/{{this.id}}" class="btn btn-outline-success px-4">Edit</a>
-                    <a href="/brand/delete/{{this.id}}" class="btn btn-outline-danger">Delete</a>
-                  </td>
-                </tr>
-                {{/each}}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="row my-3">
-          <div class="col">
-            <h4>Tabel Rent</h4>
-            <table class="table table-striped">
-              <thead class="table-dark">
-                <th>No</th>
-                <th>Car</th>
-                <th>User</th>
-                <th>Borrow Date</th>
-                <th>Return Date</th>
-                <th>Sub Total</th>
-                <th>Action</th>
-              </thead>
-              <tbody>
-                {{#each rents}}
-                <tr>
-                  <td>{{this.no}}</td>
-                  <td>{{this.car_id}}</td>
-                  <td>{{this.user_id}}</td>
-                  <td>{{this.borrow_date}}</td>
-                  <td>{{this.return_date}}</td>
-                  <td>{{this.sub_total}}</td>
-                  <td>
-                    <a href="/rent/edit/{{this.id}}" class="btn btn-outline-success px-4">Edit</a>
-                    <a href="/rent/delete/{{this.id}}" class="btn btn-outline-danger">Delete</a>
-                  </td>
-                </tr>
-                {{/each}}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </section>
-    {{/if}}
+    </div>
   </div>
+
+  {{!-- {{> home}} --}}
 </main>
 
 {{> footer}}

@@ -1,0 +1,36 @@
+{{>head}}
+{{!-- {{>navbar}} --}}
+
+{{#if message}}
+  <div class="alert alert-{{message.type}}" role="alert">
+    {{message.message}}
+  </div>
+{{/if}}
+
+<div class="container my-5 d-flex justify-content-center">
+
+  <div class="card text-dark bg-light mb-3" style="width: 30rem;">
+    <div class="card-header d-flex justify-content-between">
+      {{title}}
+      <span><a class="link-dark" href="/brand"><i class="fas fa-times"></i></a></span>
+    </div>
+    <div class="card-body">
+
+      <form action="/brand/edit/{{brand.id}}" method="POST">
+    
+        <input type="hidden" name="id" value={{brand.id}}>
+
+        <div class="form-floating">
+          <input type="text" class="form-control" id="name" name="name"  value="{{brand.name}}">
+          <label for="name">Name</label>
+        </div>
+
+        <button type="submit" class="btn btn-dark">Submit</button>
+      </form>
+
+    </div>
+  </div>
+
+</div>
+
+{{>footer}}

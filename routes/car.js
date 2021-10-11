@@ -7,9 +7,50 @@ const pathFile = "http://localhost:3000/uploads/";
 
 // render car add form page
 router.get("/add", function (req, res) {
+  const types = [];
+  const brands = [];
+
+  dbConnection.getConnection((err, conn) => {
+    if (err) throw err;
+
+    const query = "SELECT * FROM tb_type";
+
+    conn.query(query, (err, results) => {
+      if (err) throw err;
+
+      for (let result of results) {
+        types.push({
+          ...result,
+        });
+      }
+    });
+
+    conn.release();
+  });
+
+  dbConnection.getConnection((err, conn) => {
+    if (err) throw err;
+
+    const query = "SELECT * FROM tb_brand";
+
+    conn.query(query, (err, results) => {
+      if (err) throw err;
+
+      for (let result of results) {
+        brands.push({
+          ...result,
+        });
+      }
+    });
+
+    conn.release();
+  });
+
   res.render("car-rent/car/form-add", {
-    title: "Add Car",
+    title: "Form Add Car",
     isLogin: req.session.isLogin,
+    types,
+    brands,
   });
 });
 
@@ -53,7 +94,7 @@ router.get("/edit/:id", function (req, res) {
         message: "edit car successfully",
       };
       res.render("car-rent/car/form-edit", {
-        title: "Edit Car",
+        title: "Form Edit Car",
         isLogin: req.session.isLogin,
         car,
       });
@@ -178,6 +219,8 @@ router.get("/:id", function (req, res) {
         ...results[0],
         image: pathFile + results[0].photo,
       };
+
+      console.log(results[0]);
 
       // initialize statement for car owner
       let isCarRentOwner = false;

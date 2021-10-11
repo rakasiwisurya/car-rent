@@ -1,45 +1,55 @@
 {{>head}}
 
-{{>navbar}}
+{{!-- {{>navbar}} --}}
 {{#if message}}
   <div class="alert alert-{{message.type}}" role="alert">
     {{message.message}}
   </div>
 {{/if}}
 
-<main>
-  <div class="container car-rent pb-4">
-    <div class="px-5">
-        
-      <div class="card mb-3" style="max-width: 100%;">
-        <div class="row g-0">
-          <div class="col-md-4">
-            <img src="{{car.image}}" class="img-fluid rounded-start" alt="car image" style="height: 100%;">
-          </div>
-          <div class="col-md-8">
-            <div class="card-body">
-              <h2 class="card-title mb-2">{{{car.name}}}</h2>
-              <div class="mb-3">
-                ||
-                <span class="card-text"><small class="text-muted">Plat Number : {{car.plat_number}}</small></span>
-                ||
-                <span class="card-text"><small class="text-muted">Rent Price : ${{car.price}}</small></span>
-                ||
-              </div>
-              <p class="card-text mb-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi laudantium tempore fuga cum accusamus mollitia accusantium eveniet omnis! Ab consequatur eos, quidem itaque tempore accusantium vel facere laboriosam nesciunt explicabo!.</p>
-              <p class="card-text mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi laudantium tempore fuga cum accusamus mollitia accusantium eveniet omnis! Ab consequatur eos, quidem itaque tempore accusantium vel facere laboriosam nesciunt explicabo!.</p>
-
-              {{#if isCarRentOwner}}
-                <a href="/car/edit/{{car.id}}" class="btn btn-outline-success px-4"><img src="/static/icons/edit.svg" alt="edit"> Edit</a>
-                <a href="/car/delete/{{car.id}}" class="btn btn-outline-danger"><img src="/static/icons/delete.svg" alt="delete"> Delete</a>
-              {{/if}}
+<div class="container car-rent py-4">
+  <div class="px-5">
+    <h3><strong>{{title}}</strong></h3>
+    <hr>
+    <div class="card mb-3" style="max-width: 100%;">
+      <div class="row g-0">
+        <div class="col-md-4">
+          <img src="{{car.image}}" class="img-fluid rounded-start" alt="car image" style="height: 100%;">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h2 class="card-title mb-2">{{{car.name}}}</h2>
+            <div class="mb-3">
+              ||
+              <span class="card-text"><small class="text-muted">Plat Number : {{car.plat_number}}</small></span>
+              ||
+              <span class="card-text"><small class="text-muted">Rent Price : ${{car.price}}</small></span>
+              ||
             </div>
+            <p class="card-text mb-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi laudantium tempore fuga cum accusamus mollitia accusantium eveniet omnis! Ab consequatur eos, quidem itaque tempore accusantium vel facere laboriosam nesciunt explicabo!.</p>
+            <p class="card-text mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi laudantium tempore fuga cum accusamus mollitia accusantium eveniet omnis! Ab consequatur eos, quidem itaque tempore accusantium vel facere laboriosam nesciunt explicabo!.</p>
+            <a href="/{{this.id}}" class="btn btn-secondary px-3">
+                <span><i class="fas fa-arrow-circle-left"></i></span>
+                  Back
+              </a>
+            {{#if isCarRentOwner}}
+              <a href="/car/edit/{{this.id}}" class="btn btn-warning text-white px-4">
+                <span>
+                  <i class="fas fa-edit"></i>
+                </span>
+                  Edit
+              </a>
+              <a href="/car/delete/{{this.id}}" class="btn btn-danger">
+                <span><i class="fas fa-trash"></i></span>
+                  Delete
+              </a>
+            {{/if}}
           </div>
         </div>
       </div>
-
     </div>
+
   </div>
-</main>
+</div>
 
 {{>footer}}

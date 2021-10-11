@@ -60,10 +60,8 @@ app.use((req, res, next) => {
 
 // render index page
 app.get("/", function (req, res) {
-  let types = [];
-  let brands = [];
   let cars = [];
-  let rents = [];
+  let renteds = [];
   let isCarRentOwner = false;
 
   if (req.session.isLogin) {
@@ -72,59 +70,17 @@ app.get("/", function (req, res) {
     }
   }
 
-  dbConnection.getConnection((err, conn) => {
-    if (err) throw err;
-
-    const queryType = "SELECT * FROM tb_type ORDER BY created_at DESC";
-
-    conn.query(queryType, (err, results) => {
-      if (err) throw err;
-
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-
-        let no = i + 1;
-
-        types.push({
-          ...result,
-          no,
-        });
-      }
-    });
-
-    conn.release();
-  });
+  if (!req.session.isLogin) {
+    return res.redirect("/login");
+  }
 
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    const queryBrand = "SELECT * FROM tb_brand ORDER BY created_at DESC";
-
-    conn.query(queryBrand, (err, results) => {
-      if (err) throw err;
-
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-
-        let no = i + 1;
-
-        brands.push({
-          ...result,
-          no,
-        });
-      }
-    });
-
-    conn.release();
-  });
-
-  dbConnection.getConnection((err, conn) => {
-    if (err) throw err;
-
-    const queryCar =
+    const queryAvailable =
       "SELECT * FROM tb_car WHERE status = '1' ORDER BY created_at DESC";
 
-    conn.query(queryCar, (err, results) => {
+    conn.query(queryAvailable, (err, results) => {
       if (err) throw err;
 
       for (let result of results) {
@@ -141,19 +97,16 @@ app.get("/", function (req, res) {
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    const queryRent = "SELECT * FROM tb_rent ORDER BY created_at DESC";
+    const queryRented =
+      "SELECT * FROM tb_car WHERE status = '0' ORDER BY created_at DESC";
 
-    conn.query(queryRent, (err, results) => {
+    conn.query(queryRented, (err, results) => {
       if (err) throw err;
 
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
-
-        let no = i + 1;
-
-        rents.push({
+      for (let result of results) {
+        renteds.push({
           ...result,
-          no,
+          image: "http://localhost:3000/uploads/" + result.photo,
         });
       }
     });
@@ -164,11 +117,10 @@ app.get("/", function (req, res) {
   res.render("index", {
     title: "Car Rent",
     isLogin: req.session.isLogin,
+    username: req.session.user.name,
     isCarRentOwner,
     cars,
-    types,
-    brands,
-    rents,
+    renteds,
   });
 });
 
@@ -179,13 +131,13 @@ app.use("/", authRoute);
 app.use("/type", typeRoute);
 
 // mount brand route
-// app.use("/brand", brandRoute);
+app.use("/brand", brandRoute);
 
 // mount car route
 app.use("/car", carRoute);
 
 // mount rent route
-// app.use("/car", rentRoute);
+app.use("/rent", rentRoute);
 
 // create server app with port 3000
 const server = http.createServer(app);
