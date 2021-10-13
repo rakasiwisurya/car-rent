@@ -28,18 +28,18 @@
             </div>
             <p class="card-text mb-2">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi laudantium tempore fuga cum accusamus mollitia accusantium eveniet omnis! Ab consequatur eos, quidem itaque tempore accusantium vel facere laboriosam nesciunt explicabo!.</p>
             <p class="card-text mb-4">Lorem ipsum dolor sit amet consectetur adipisicing elit. Commodi laudantium tempore fuga cum accusamus mollitia accusantium eveniet omnis! Ab consequatur eos, quidem itaque tempore accusantium vel facere laboriosam nesciunt explicabo!.</p>
-            <a href="/{{this.id}}" class="btn btn-secondary px-3">
+            <a href="/" class="btn btn-secondary px-3">
                 <span><i class="fas fa-arrow-circle-left"></i></span>
                   Back
               </a>
             {{#if isCarRentOwner}}
-              <a href="/car/edit/{{this.id}}" class="btn btn-warning text-white px-4">
+              <a href="/car/edit/{{car.id}}" class="btn btn-warning text-white px-4">
                 <span>
                   <i class="fas fa-edit"></i>
                 </span>
                   Edit
               </a>
-              <a href="/car/delete/{{this.id}}" class="btn btn-danger">
+              <a href="/car/delete/{{car.id}}" class="btn btn-danger">
                 <span><i class="fas fa-trash"></i></span>
                   Delete
               </a>

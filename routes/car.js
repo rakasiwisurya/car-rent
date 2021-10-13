@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const { unlink } = require("fs");
 
 // import db connection
 const dbConnection = require("../connection/db");
@@ -7,15 +8,16 @@ const pathFile = "http://localhost:3000/uploads/";
 
 // render car add form page
 router.get("/add", function (req, res) {
-  const types = [];
-  const brands = [];
-
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    const query = "SELECT * FROM tb_type";
+    const types = [];
+    const brands = [];
 
-    conn.query(query, (err, results) => {
+    const queryTypes = "SELECT * FROM tb_type";
+    const queryBrands = "SELECT * FROM tb_brand";
+
+    conn.query(queryTypes, (err, results) => {
       if (err) throw err;
 
       for (let result of results) {
@@ -23,34 +25,26 @@ router.get("/add", function (req, res) {
           ...result,
         });
       }
+
+      conn.query(queryBrands, (err, results) => {
+        if (err) throw err;
+
+        for (let result of results) {
+          brands.push({
+            ...result,
+          });
+        }
+      });
+      conn.release();
     });
-
     conn.release();
-  });
 
-  dbConnection.getConnection((err, conn) => {
-    if (err) throw err;
-
-    const query = "SELECT * FROM tb_brand";
-
-    conn.query(query, (err, results) => {
-      if (err) throw err;
-
-      for (let result of results) {
-        brands.push({
-          ...result,
-        });
-      }
+    res.render("car-rent/car/form-add", {
+      title: "Form Add Car",
+      isLogin: req.session.isLogin,
+      types,
+      brands,
     });
-
-    conn.release();
-  });
-
-  res.render("car-rent/car/form-add", {
-    title: "Form Add Car",
-    isLogin: req.session.isLogin,
-    types,
-    brands,
   });
 });
 
@@ -65,6 +59,7 @@ router.get("/edit/:id", function (req, res) {
 
     return res.redirect("/login");
   }
+
   const query = "SELECT * FROM tb_car WHERE id = ?";
 
   dbConnection.getConnection((err, conn) => {
@@ -89,17 +84,12 @@ router.get("/edit/:id", function (req, res) {
         // content: results[0].content.replace(/(<br><br>)/g, "\r\n"),
       };
 
-      req.session.message = {
-        type: "success",
-        message: "edit car successfully",
-      };
       res.render("car-rent/car/form-edit", {
         title: "Form Edit Car",
         isLogin: req.session.isLogin,
         car,
       });
     });
-
     conn.release();
   });
 });
@@ -136,7 +126,6 @@ router.post("/", uploadFile("image"), function (req, res) {
         }
       }
     );
-
     conn.release();
   });
 });
@@ -150,27 +139,41 @@ router.post("/edit/:id", uploadFile("image"), function (req, res) {
     image = req.file.filename;
   }
 
-  const query =
+  const queryDelFile = "SELECT photo From tb_car WHERE id = ?";
+  const queryEditData =
     "UPDATE tb_car SET type_id = ?, brand_id = ?, name = ?, plat_number = ?, price = ?, photo = ? WHERE id = ?";
 
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    conn.query(
-      query,
-      [type_id, brand_id, name, plat_number, price, image, id],
-      (err, results) => {
-        if (err) {
+    conn.query(queryDelFile, [id], (err, results) => {
+      if (err) throw err;
+
+      unlink(`uploads/${results[0].photo}`, (err) => {
+        if (err) throw err;
+      });
+
+      conn.query(
+        queryEditData,
+        [type_id, brand_id, name, plat_number, price, image, id],
+        (err, results) => {
+          if (err) {
+            req.session.message = {
+              type: "danger",
+              message: err.message,
+            };
+            res.redirect(`/car/${id}`);
+          }
+
           req.session.message = {
-            type: "danger",
-            message: err.message,
+            type: "success",
+            message: "edit car successfully",
           };
           res.redirect(`/car/${id}`);
         }
-        res.redirect(`/car/${id}`);
-      }
-    );
-
+      );
+      conn.release();
+    });
     conn.release();
   });
 });
@@ -179,27 +182,37 @@ router.post("/edit/:id", uploadFile("image"), function (req, res) {
 router.get("/delete/:id", function (req, res) {
   const { id } = req.params;
 
-  const query = "DELETE FROM tb_car WHERE id = ?";
+  const queryDelFile = "SELECT photo From tb_car WHERE id = ?";
+  const queryDelData = "DELETE FROM tb_car WHERE id = ?";
 
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    conn.query(query, [id], (err, results) => {
-      if (err) {
+    conn.query(queryDelFile, [id], (err, results) => {
+      if (err) throw err;
+
+      unlink(`uploads/${results[0].photo}`, (err) => {
+        if (err) throw err;
+      });
+
+      conn.query(queryDelData, [id], (err, results) => {
+        if (err) {
+          req.session.message = {
+            type: "danger",
+            message: err.message,
+          };
+
+          res.redirect("/");
+        }
+
         req.session.message = {
-          type: "danger",
-          message: err.message,
+          type: "success",
+          message: "car successfully deleted",
         };
         res.redirect("/");
-      }
-
-      req.session.message = {
-        type: "success",
-        message: "car successfully deleted",
-      };
-      res.redirect("/");
+      });
+      conn.release();
     });
-
     conn.release();
   });
 });
@@ -219,8 +232,6 @@ router.get("/:id", function (req, res) {
         ...results[0],
         image: pathFile + results[0].photo,
       };
-
-      console.log(results[0]);
 
       // initialize statement for car owner
       let isCarRentOwner = false;

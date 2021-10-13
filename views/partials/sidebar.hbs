@@ -22,13 +22,13 @@
         Home
       </a>
     </li>
-    {{#if isCarRentOwner}}
     <li>
       <a href="/rent" class="nav-link link-dark">
         <span><i class="fas fa-shopping-cart"></i></span>
         Rent
       </a>
     </li>
+    {{#if isCarRentOwner}}
     <li>
       <a href="/type" class="nav-link link-dark">
         <span><i class="fas fa-car"></i></span>
@@ -79,8 +79,8 @@
     >
       {{#if isCarRentOwner}}
       <li><a class="dropdown-item" href="/car/add">Add New Car</a></li>
-      {{/if}}
       <li><hr class="dropdown-divider" /></li>
+      {{/if}}
       <li><a class="dropdown-item" href="/logout">Sign out</a></li>
     </ul>
   </div>

@@ -60,8 +60,6 @@ app.use((req, res, next) => {
 
 // render index page
 app.get("/", function (req, res) {
-  let cars = [];
-  let renteds = [];
   let isCarRentOwner = false;
 
   if (req.session.isLogin) {
@@ -77,8 +75,14 @@ app.get("/", function (req, res) {
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
+    const cars = [];
+    const renteds = [];
+
     const queryAvailable =
       "SELECT * FROM tb_car WHERE status = '1' ORDER BY created_at DESC";
+
+    const queryRented =
+      "SELECT * FROM tb_car WHERE status = '0' ORDER BY created_at DESC";
 
     conn.query(queryAvailable, (err, results) => {
       if (err) throw err;
@@ -89,38 +93,29 @@ app.get("/", function (req, res) {
           image: "http://localhost:3000/uploads/" + result.photo,
         });
       }
+
+      conn.query(queryRented, (err, results) => {
+        if (err) throw err;
+
+        for (let result of results) {
+          renteds.push({
+            ...result,
+            image: "http://localhost:3000/uploads/" + result.photo,
+          });
+        }
+      });
+      conn.release();
     });
-
     conn.release();
-  });
 
-  dbConnection.getConnection((err, conn) => {
-    if (err) throw err;
-
-    const queryRented =
-      "SELECT * FROM tb_car WHERE status = '0' ORDER BY created_at DESC";
-
-    conn.query(queryRented, (err, results) => {
-      if (err) throw err;
-
-      for (let result of results) {
-        renteds.push({
-          ...result,
-          image: "http://localhost:3000/uploads/" + result.photo,
-        });
-      }
+    res.render("index", {
+      title: "Car Rent",
+      isLogin: req.session.isLogin,
+      username: req.session.user.name,
+      isCarRentOwner,
+      cars,
+      renteds,
     });
-
-    conn.release();
-  });
-
-  res.render("index", {
-    title: "Car Rent",
-    isLogin: req.session.isLogin,
-    username: req.session.user.name,
-    isCarRentOwner,
-    cars,
-    renteds,
   });
 });
 

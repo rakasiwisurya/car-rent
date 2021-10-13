@@ -22,30 +22,63 @@ router.get("/", function (req, res) {
 
     const rents = [];
 
-    const queryRent =
-      "SELECT tb_rent.*, tb_car.id AS carId, tb_car.name AS carName, tb_user.id AS userId, tb_user.name AS userName FROM tb_rent, tb_car, tb_user WHERE tb_rent.car_id = tb_car.id AND tb_rent.user_id = tb_user.id ORDER BY tb_rent.borrow_date ASC";
+    if (isCarRentOwner) {
+      const queryRent =
+        "SELECT tb_rent.*, tb_car.name AS carName, tb_user.name AS userName FROM tb_rent INNER JOIN tb_car ON tb_car.id = tb_rent.car_id INNER JOIN tb_user ON tb_user.id = tb_rent.user_id ORDER BY tb_rent.created_at DESC";
 
-    conn.query(queryRent, (err, results) => {
-      if (err) throw err;
+      conn.query(queryRent, (err, results) => {
+        if (err) throw err;
 
-      for (let i = 0; i < results.length; i++) {
-        const result = results[i];
+        for (let i = 0; i < results.length; i++) {
+          const result = results[i];
 
-        let no = i + 1;
-        let borrowDate = result.borrow_date.toISOString().split("T")[0];
-        let returnDate = null;
-        if (result.return_date != null) {
-          returnDate = result.return_date.toISOString().split("T")[0];
+          let no = i + 1;
+          let borrowDate = result.borrow_date.toLocaleDateString("id-ID");
+          let returnDate = null;
+
+          if (result.return_date != null) {
+            returnDate = result.return_date.toLocaleDateString("id-ID");
+          }
+
+          rents.push({
+            ...result,
+            no,
+            borrowDate,
+            returnDate,
+            isCarRentOwner,
+          });
         }
+      });
+      conn.release();
+    } else {
+      const queryRent =
+        "SELECT tb_rent.*, tb_car.name AS carName, tb_user.name AS userName FROM tb_rent INNER JOIN tb_car ON tb_car.id = tb_rent.car_id INNER JOIN tb_user ON tb_user.id = tb_rent.user_id WHERE tb_rent.user_id = ? ORDER BY tb_rent.borrow_date DESC";
 
-        rents.push({
-          ...result,
-          no,
-          borrowDate,
-          returnDate,
-        });
-      }
-    });
+      conn.query(queryRent, [req.session.user.id], (err, results) => {
+        if (err) throw err;
+
+        for (let i = 0; i < results.length; i++) {
+          const result = results[i];
+
+          let no = i + 1;
+          let borrowDate = result.borrow_date.toLocaleDateString("id-ID");
+          let returnDate = null;
+
+          if (result.return_date != null) {
+            returnDate = result.return_date.toLocaleDateString("id-ID");
+          }
+
+          rents.push({
+            ...result,
+            no,
+            borrowDate,
+            returnDate,
+            isCarRentOwner,
+          });
+        }
+      });
+      conn.release();
+    }
 
     res.render("car-rent/rent/index", {
       title: "Rent",
@@ -54,8 +87,6 @@ router.get("/", function (req, res) {
       isCarRentOwner,
       rents,
     });
-
-    conn.release();
   });
 });
 
@@ -125,14 +156,11 @@ router.post("/add", function (req, res) {
   let { car_id, sub_total } = req.body;
 
   let today = new Date();
-  let dd = String(today.getDate()).padStart(2, "0");
-  let mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-  let yyyy = today.getFullYear();
-  today = `${yyyy}-${mm}-${dd}`;
-
   let user_id = req.session.user.id;
   let status = "0";
   let borrow_date = today;
+
+  // console.log(borrow_date);
 
   const queryInsert =
     "INSERT INTO tb_rent (car_id, user_id, borrow_date, sub_total) VALUES (?,?,?,?)";
@@ -140,6 +168,8 @@ router.post("/add", function (req, res) {
   const queryUpdate = "UPDATE tb_car SET status = ? WHERE id = ?";
 
   dbConnection.getConnection((err, conn) => {
+    if (err) throw err;
+
     conn.query(
       queryInsert,
       [car_id, user_id, borrow_date, sub_total],
@@ -151,50 +181,43 @@ router.post("/add", function (req, res) {
           };
           res.redirect("/");
         }
+
+        conn.query(queryUpdate, [status, car_id], (err, results) => {
+          if (err) {
+            req.session.message = {
+              type: "danger",
+              message: err.message,
+            };
+            res.redirect(`/`);
+          }
+        });
+        conn.release();
       }
     );
-
-    conn.query(queryUpdate, [status, car_id], (err, results) => {
-      if (err) {
-        req.session.message = {
-          type: "danger",
-          message: err.message,
-        };
-        res.redirect(`/`);
-      }
-    });
-
-    if (err) {
-      throw err;
-    } else {
-      req.session.message = {
-        type: "success",
-        message: "Rent Car Successfully",
-      };
-      res.redirect(`/rent`);
-    }
-
     conn.release();
   });
+
+  req.session.message = {
+    type: "success",
+    message: "Rent Car Successfully",
+  };
+  res.redirect(`/`);
 });
 
 router.post("/return", function (req, res) {
   let { car_id } = req.body;
 
-  let today = new Date();
-  let dd = String(today.getDate()).padStart(2, "0");
-  let mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
-  let yyyy = today.getFullYear();
-  today = `${yyyy}-${mm}-${dd}`;
-
-  let return_date = today;
+  let return_date = new Date(); // today
   let status = "1";
 
-  const queryInsertReturn = "UPDATE tb_rent SET return_date = ? WHERE id = ?";
+  const queryInsertReturn =
+    "UPDATE tb_rent SET return_date = ? WHERE car_id = ?";
 
   const queryUpdateStatus = "UPDATE tb_car SET status = ? WHERE id = ?";
 
   dbConnection.getConnection((err, conn) => {
+    if (err) throw err;
+
     conn.query(queryInsertReturn, [return_date, car_id], (err, results) => {
       if (err) {
         req.session.message = {
@@ -203,30 +226,26 @@ router.post("/return", function (req, res) {
         };
         res.redirect(`/`);
       }
+
+      conn.query(queryUpdateStatus, [status, car_id], (err, results) => {
+        if (err) {
+          req.session.message = {
+            type: "danger",
+            message: err.message,
+          };
+          res.redirect(`/`);
+        }
+      });
+      conn.release();
     });
     conn.release();
-
-    conn.query(queryUpdateStatus, [status, car_id], (err, results) => {
-      if (err) {
-        req.session.message = {
-          type: "danger",
-          message: err.message,
-        };
-        res.redirect(`/`);
-      }
-    });
-    conn.release();
-
-    if (err) {
-      throw err;
-    } else {
-      req.session.message = {
-        type: "success",
-        message: "Return Car Succesfully",
-      };
-      res.redirect(`/`);
-    }
   });
+
+  req.session.message = {
+    type: "success",
+    message: "Return Car Succesfully",
+  };
+  res.redirect(`/`);
 });
 
 router.post("/edit/:id", function (req, res) {

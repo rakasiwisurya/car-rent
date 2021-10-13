@@ -5,7 +5,7 @@ const connectionPool = mysql.createPool({
   user: "root",
   password: null,
   database: "db_car_rent",
-  connectionLimit: 10,
+  connectionLimit: 5,
 });
 
 module.exports = connectionPool;

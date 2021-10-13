@@ -21,7 +21,9 @@
         <th>Borrow Date</th>
         <th>Return Date</th>
         <th>Sub Total</th>
+        {{#if isCarRentOwner}}
         <th>Action</th>
+        {{/if}}
       </thead>
       <tbody>
         {{#each rents}}
@@ -32,6 +34,7 @@
           <td>{{this.borrowDate}}</td>
           <td>{{this.returnDate}}</td>
           <td>${{this.sub_total}}</td>
+          {{#if this.isCarRentOwner}}
           <td class="text-center table-action">
             <a href="/rent/edit/{{this.id}}" class="btn btn-warning text-white">
               <span>
@@ -39,9 +42,12 @@
               </span>
             </a>
             <a href="/rent/delete/{{this.id}}" class="btn btn-danger">
-              <span><i class="fas fa-trash"></i></span>
+              <span>
+                <i class="fas fa-trash"></i>
+              </span>
             </a>
           </td>
+          {{/if}}
         </tr>
         {{/each}}
       </tbody>
