@@ -128,10 +128,23 @@ router.get("/edit/:id", function (req, res) {
     conn.query(query, [id], (err, results) => {
       if (err) throw err;
 
-      let borrowDate = results[0].borrow_date.toISOString().split("T")[0];
+      let borrowDateSplit = results[0].borrow_date
+        .toLocaleDateString("id-ID")
+        .split("/");
+      let dayBorrowDate = String(borrowDateSplit[0]).padStart(2, "0");
+      let monthBorrowDate = String(borrowDateSplit[1]).padStart(2, "0");
+      let yearBorrowDate = borrowDateSplit[2];
+      let borrowDate = `${yearBorrowDate}-${monthBorrowDate}-${dayBorrowDate}`;
+
       let returnDate = null;
       if (results[0].return_date != null) {
-        returnDate = results[0].return_date.toISOString().split("T")[0];
+        let returnDateSplit = results[0].return_date
+          .toLocaleDateString("id-ID")
+          .split("/");
+        let dayReturnDate = String(returnDateSplit[0]).padStart(2, "0");
+        let monthReturnDate = String(returnDateSplit[1]).padStart(2, "0");
+        let yearReturnDate = returnDateSplit[2];
+        returnDate = `${yearReturnDate}-${monthReturnDate}-${dayReturnDate}`;
       }
 
       if (req.session.user.status != 1) {
