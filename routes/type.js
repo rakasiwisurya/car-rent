@@ -20,12 +20,12 @@ router.get("/", function (req, res) {
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    const types = [];
-
     const queryType = "SELECT * FROM tb_type ORDER BY created_at ASC";
 
     conn.query(queryType, (err, results) => {
       if (err) throw err;
+
+      const types = [];
 
       for (let i = 0; i < results.length; i++) {
         const result = results[i];
@@ -37,14 +37,14 @@ router.get("/", function (req, res) {
           no,
         });
       }
-    });
 
-    res.render("car-rent/type/index", {
-      title: "Type",
-      isLogin: req.session.isLogin,
-      username: req.session.user.name,
-      isCarRentOwner,
-      types,
+      res.render("car-rent/type/index", {
+        title: "Type",
+        isLogin: req.session.isLogin,
+        username: req.session.user.name,
+        isCarRentOwner,
+        types,
+      });
     });
 
     conn.release();
@@ -73,9 +73,7 @@ router.get("/edit/:id", function (req, res) {
   const query = "SELECT * FROM tb_type WHERE id = ?";
 
   dbConnection.getConnection((err, conn) => {
-    if (err) {
-      throw err;
-    }
+    if (err) throw err;
 
     conn.query(query, [id], (err, results) => {
       if (err) throw err;

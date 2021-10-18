@@ -20,14 +20,14 @@ router.get("/", function (req, res) {
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    const rents = [];
-
     if (isCarRentOwner) {
       const queryRent =
         "SELECT tb_rent.*, tb_car.name AS carName, tb_user.name AS userName FROM tb_rent INNER JOIN tb_car ON tb_car.id = tb_rent.car_id INNER JOIN tb_user ON tb_user.id = tb_rent.user_id ORDER BY tb_rent.created_at DESC";
 
       conn.query(queryRent, (err, results) => {
         if (err) throw err;
+
+        const rents = [];
 
         for (let i = 0; i < results.length; i++) {
           const result = results[i];
@@ -48,6 +48,14 @@ router.get("/", function (req, res) {
             isCarRentOwner,
           });
         }
+
+        res.render("car-rent/rent/index", {
+          title: "Rent",
+          isLogin: req.session.isLogin,
+          username: req.session.user.name,
+          isCarRentOwner,
+          rents,
+        });
       });
       conn.release();
     } else {
@@ -76,17 +84,17 @@ router.get("/", function (req, res) {
             isCarRentOwner,
           });
         }
+
+        res.render("car-rent/rent/index", {
+          title: "Rent",
+          isLogin: req.session.isLogin,
+          username: req.session.user.name,
+          isCarRentOwner,
+          rents,
+        });
       });
       conn.release();
     }
-
-    res.render("car-rent/rent/index", {
-      title: "Rent",
-      isLogin: req.session.isLogin,
-      username: req.session.user.name,
-      isCarRentOwner,
-      rents,
-    });
   });
 });
 

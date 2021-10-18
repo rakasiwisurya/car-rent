@@ -75,14 +75,14 @@ app.get("/", function (req, res) {
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    const cars = [];
-    const renteds = [];
-
     const queryAvailable =
       "SELECT * FROM tb_car WHERE status = '1' ORDER BY created_at DESC";
 
     const queryRented =
       "SELECT * FROM tb_car WHERE status = '0' ORDER BY created_at DESC";
+
+    const cars = [];
+    const renteds = [];
 
     conn.query(queryAvailable, (err, results) => {
       if (err) throw err;
@@ -104,18 +104,20 @@ app.get("/", function (req, res) {
           });
         }
       });
+
+      res.render("index", {
+        title: "Car Rent",
+        isLogin: req.session.isLogin,
+        username: req.session.user.name,
+        isCarRentOwner,
+        cars,
+        renteds,
+      });
+
       conn.release();
     });
-    conn.release();
 
-    res.render("index", {
-      title: "Car Rent",
-      isLogin: req.session.isLogin,
-      username: req.session.user.name,
-      isCarRentOwner,
-      cars,
-      renteds,
-    });
+    conn.release();
   });
 });
 
