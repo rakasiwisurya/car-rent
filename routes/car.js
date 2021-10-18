@@ -11,14 +11,14 @@ router.get("/add", function (req, res) {
   dbConnection.getConnection((err, conn) => {
     if (err) throw err;
 
-    const types = [];
-    const brands = [];
-
     const queryTypes = "SELECT * FROM tb_type";
     const queryBrands = "SELECT * FROM tb_brand";
 
     conn.query(queryTypes, (err, results) => {
       if (err) throw err;
+
+      const types = [];
+      const brands = [];
 
       for (let result of results) {
         types.push({
@@ -36,15 +36,15 @@ router.get("/add", function (req, res) {
         }
       });
       conn.release();
+
+      res.render("car-rent/car/form-add", {
+        title: "Form Add Car",
+        isLogin: req.session.isLogin,
+        types,
+        brands,
+      });
     });
     conn.release();
-
-    res.render("car-rent/car/form-add", {
-      title: "Form Add Car",
-      isLogin: req.session.isLogin,
-      types,
-      brands,
-    });
   });
 });
 
