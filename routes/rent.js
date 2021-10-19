@@ -118,15 +118,18 @@ router.get("/edit/:id", function (req, res) {
 
     return res.redirect("/login");
   }
-  const query = "SELECT * FROM tb_rent WHERE id = ?";
+
+  const query =
+    "SELECT tb_rent.*, tb_car.id AS carId, tb_car.name AS carName FROM tb_rent INNER JOIN tb_car ON tb_car.id = tb_rent.car_id WHERE tb_rent.id = ?";
+  const queryCar = "SELECT * FROM tb_car";
 
   dbConnection.getConnection((err, conn) => {
-    if (err) {
-      throw err;
-    }
+    if (err) throw err;
 
     conn.query(query, [id], (err, results) => {
       if (err) throw err;
+
+      const cars = [];
 
       let borrowDateSplit = results[0].borrow_date
         .toLocaleDateString("id-ID")
@@ -161,10 +164,22 @@ router.get("/edit/:id", function (req, res) {
         returnDate,
       };
 
+      conn.query(queryCar, (err, results) => {
+        if (err) throw err;
+
+        for (result of results) {
+          cars.push({
+            ...result,
+          });
+        }
+      });
+      conn.release();
+
       res.render("car-rent/rent/form-edit", {
         title: "Edit Rent",
         isLogin: req.session.isLogin,
         rent,
+        cars,
       });
     });
 

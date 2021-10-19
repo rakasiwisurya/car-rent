@@ -60,12 +60,10 @@ router.get("/edit/:id", function (req, res) {
     return res.redirect("/login");
   }
 
-  const query = "SELECT * FROM tb_car WHERE id = ?";
-
   dbConnection.getConnection((err, conn) => {
-    if (err) {
-      throw err;
-    }
+    if (err) throw err;
+
+    const query = "SELECT * FROM tb_car WHERE id = ?";
 
     conn.query(query, [id], (err, results) => {
       if (err) throw err;
@@ -83,6 +81,10 @@ router.get("/edit/:id", function (req, res) {
         image: pathFile + results[0].photo,
         // content: results[0].content.replace(/(<br><br>)/g, "\r\n"),
       };
+
+      // conn.query(queryCar, (err, results) => {
+      //   if (err) throw err;
+      // });
 
       res.render("car-rent/car/form-edit", {
         title: "Form Edit Car",

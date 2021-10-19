@@ -20,9 +20,23 @@
     
         <input type="hidden" name="id" value={{rent.id}}>
 
-        <div class="form-floating mb-3">
+        {{!-- <div class="form-floating mb-3">
           <input type="text" class="form-control" id="car_id" name="car_id" placeholder="example" value="{{rent.car_id}}">
           <label for="car_id">Car</label>
+        </div> --}}
+
+        <div class="form-floating mb-3">
+          <select class="form-select" id="car_id" aria-label="Floating label select car">
+            <optgroup label="Default">
+              <option value="{{rent.carId}}">{{rent.carName}}</option>
+            </optgroup>
+            <optgroup label="Cars">
+              {{#each cars }}              
+              <option value="{{this.id}}">{{this.name}}</option>
+              {{/each}}
+            </optgroup>
+          </select>
+          <label for="car_id">Provinsi</label>
         </div>
 
         <div class="form-floating">
